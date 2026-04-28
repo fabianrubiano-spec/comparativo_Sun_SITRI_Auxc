@@ -1,0 +1,24 @@
+SELECT 
+    COMPANIA,
+    ORIGEN, 
+    EXTRACT(YEAR FROM FECHA_CONTABLE) AS ANIO,
+    EXTRACT(MONTH FROM FECHA_CONTABLE) AS MES,
+    CUENTA,
+    -- Cálculo del saldo neto (Débito - Crédito)
+    SUM(CASE 
+            WHEN D_C = 'D' THEN VALOR 
+            WHEN D_C = 'C' THEN -VALOR 
+            ELSE 0 
+        END) AS SALDO_TOTAL,
+    -- Conteo de registros por cada grupo (Satelites)
+    COUNT(*) AS TOTAL_REGISTROS
+FROM 
+    MAESTRA_DATOS
+GROUP BY 
+    COMPANIA, 
+    ORIGEN, 
+    EXTRACT(YEAR FROM FECHA_CONTABLE),
+    EXTRACT(MONTH FROM FECHA_CONTABLE), 
+    CUENTA
+ORDER BY 
+    ANIO, MES, COMPANIA, ORIGEN, CUENTA;

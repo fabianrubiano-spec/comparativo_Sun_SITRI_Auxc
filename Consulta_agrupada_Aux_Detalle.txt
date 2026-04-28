@@ -1,0 +1,23 @@
+SELECT 
+    AUXD_CTA_CONTABLE AS CUENTA,
+    AUXD_TIPO_DIARIO AS ORIGEN,
+    -- Agrupamos por Año y Mes usando la fecha de transacción
+    EXTRACT(YEAR FROM AUXD_FECHA_TRANS) AS ANIO,
+    EXTRACT(MONTH FROM AUXD_FECHA_TRANS) AS MES,
+    -- Suma directa: los negativos restan y los positivos suman automáticamente
+    SUM(AUXD_VALOR) AS SALDO_TOTAL,
+    -- Contamos cuántos movimientos componen ese saldo (opcional, para control)
+    COUNT(*) AS NUM_MOVIMIENTOS
+FROM 
+    AUXC_DETALLE
+WHERE 
+    AUXD_FECHA_TRANS IS NOT NULL
+GROUP BY 
+    AUXD_CTA_CONTABLE,
+    AUXD_TIPO_DIARIO,
+    EXTRACT(YEAR FROM AUXD_FECHA_TRANS),
+    EXTRACT(MONTH FROM AUXD_FECHA_TRANS)
+ORDER BY 
+    ANIO DESC, 
+    MES DESC, 
+    CUENTA ASC;
