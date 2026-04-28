@@ -1,0 +1,22 @@
+SELECT 
+    COMPANIA,
+    -- Extraemos el mes de la fecha contable
+    EXTRACT(MONTH FROM FECHA_CONTABLE) AS MES,
+    -- También es recomendable incluir el año para no mezclar datos de distintos periodos
+    EXTRACT(YEAR FROM FECHA_CONTABLE) AS ANIO,
+    CUENTA,
+    -- Calculamos el saldo: Débito suma, Crédito resta
+    SUM(CASE 
+            WHEN D_C = 'D' THEN VALOR 
+            WHEN D_C = 'C' THEN -VALOR 
+            ELSE 0 
+        END) AS SALDO_TOTAL
+FROM 
+    MAESTRA_DATOS
+GROUP BY 
+    COMPANIA, 
+    EXTRACT(YEAR FROM FECHA_CONTABLE),
+    EXTRACT(MONTH FROM FECHA_CONTABLE), 
+    CUENTA
+ORDER BY 
+    ANIO, MES, COMPANIA, CUENTA;
